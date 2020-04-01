@@ -1,0 +1,20 @@
+version: "3"
+services:
+  service1:
+    build: ./service1/
+    ports:
+      - "8001:8000"
+    volumes:
+      - "./gitlab-data:/data"
+    networks:
+      - shared-network
+    links:
+      - service2
+  service2:
+    image: service2:latest
+    ports:
+      - "8080"
+    networks:
+      - shared-network
+networks:
+  shared-network: {}

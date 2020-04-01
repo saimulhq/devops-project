@@ -1,0 +1,30 @@
+stages:
+  - static-analysis
+  - test
+
+eslint:
+  stage: static-analysis
+  image: node:latest
+  script:
+    - npm install -g eslint
+    - eslint service1/server.js
+    - eslint service2/server.js
+
+test:
+  stage: test
+  image:
+    name: docker/compose:1.21.2
+    entrypoint: ["/bin/sh", "-c"]
+  services:
+    - docker:dind
+  before_script:
+    - docker version
+    - docker-compose version
+  script:
+    - cd service2
+    - docker build --tag=service2 .
+    - cd ../service1
+    - docker build --tag=service1 .
+    - cd test
+    - docker build --tag=service1test .
+    - docker-compose up --abort-on-container-exit
